@@ -1,5 +1,6 @@
 const express = require("express");
 const router = express.Router();
+const { checkAuth } = require("../middleware/check-auth");
 const serverError = require("../utils/serverError");
 const { unlink } = require("fs");
 const {
@@ -26,28 +27,36 @@ router.get("/", async (req, res, next) => {
   // res.json().status(201)
 });
 
-router.post("/", uploadImage.single("image"), async (req, res, next) => {
-  const data = req.body;
-  let meetup;
-  let imageUrl = req.file ? req.file.path : "";
-  try {
-    meetup = await addMeetup({
-      title: data.title,
-      subtitle: data.subtitle,
-      description: data.description,
-      imageUrl: imageUrl,
-      address: data.address,
-      contactEmail: data.contactEmail,
-      isFavorite: data.isFavorite === "true" ? true : false,
-    });
-  } catch (error) {
-    return next(error);
+router.post(
+  "/",
+  checkAuth,
+  uploadImage.single("image"),
+  async (req, res, next) => {
+    const data = req.body;
+    let meetup;
+    let imageUrl = req.file ? req.file.path : "";
+
+    try {
+      meetup = await addMeetup({
+        title: data.title,
+        subtitle: data.subtitle,
+        description: data.description,
+        imageUrl: imageUrl,
+        address: data.address,
+        contactEmail: req.currentUser.email,
+        createrId: req.currentUser.id,
+        isFavorite: data.isFavorite === "true" ? true : false,
+      });
+    } catch (error) {
+      return next(error);
+    }
+    res.json(meetup).status(201);
   }
-  res.json(meetup).status(201);
-});
+);
 
 router.put(
   "/:id",
+  checkAuth,
   checkMeetupExistence,
   uploadImage.single("image"),
   async (req, res, next) => {
@@ -76,7 +85,7 @@ router.put(
     }
 
     try {
-      await updateMeetup(id, newData);
+      await updateMeetup(id, { ...newData, createrId: req.currentUser.id });
     } catch (error) {
       return next(error);
     }
@@ -84,16 +93,21 @@ router.put(
   }
 );
 
-router.delete("/:id", checkMeetupExistence, async (req, res, next) => {
-  const { id } = req.params;
-  try {
-    await deleteMeetup(id);
-  } catch (error) {
-    return next(error);
+router.delete(
+  "/:id",
+  checkAuth,
+  checkMeetupExistence,
+  async (req, res, next) => {
+    const { id } = req.params;
+    try {
+      await deleteMeetup(id);
+    } catch (error) {
+      return next(error);
+    }
+    const deletingImage = req.currentMeetup.imageUrl;
+    unlink(deletingImage, (e) => console.log(e));
+    res.json({ message: "Deleted Successfully" }).status(201);
   }
-  const deletingImage = req.currentMeetup.imageUrl;
-  unlink(deletingImage, (e) => console.log(e));
-  res.json({ message: "Deleted Successfully" }).status(201);
-});
+);
 
 module.exports = router;

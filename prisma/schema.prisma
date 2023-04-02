@@ -29,5 +29,5 @@ model User {
   lastName  String
   email     String   @unique
   password  String
-  Meetup    Meetup[]
+  meetups   Meetup[]
 }

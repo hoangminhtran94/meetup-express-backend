@@ -22,3 +22,11 @@ exports.getAUser = async (email) => {
     throw error;
   }
 };
+
+exports.getAUserById = async (id) => {
+  try {
+    return await db.user.findFirst({ where: { id } });
+  } catch (error) {
+    throw error;
+  }
+};

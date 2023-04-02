@@ -42,6 +42,7 @@ app.use(function (err, req, res, next) {
       console.log(e);
     });
   }
+  console.log(err);
   res
     .status(err.status || 500)
     .json({ error: err.message ?? "Something wrong happened" });

@@ -18,6 +18,7 @@ exports.addMeetup = async (data) => {
         description: data.description,
         imageUrl: data.imageUrl,
         address: data.address,
+        createrId: data.createrId,
         contactEmail: data.contactEmail,
         isFavorite: data.isFavorite,
       },

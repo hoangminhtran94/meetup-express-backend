@@ -30,7 +30,7 @@ router.get("/", async (req, res, next) => {
 router.post(
   "/",
   checkAuth,
-  uploadImage.single("image"),
+  uploadImage("public/images").single("image"),
   async (req, res, next) => {
     const data = req.body;
     let meetup;
@@ -58,7 +58,7 @@ router.put(
   "/:id",
   checkAuth,
   checkMeetupExistence,
-  uploadImage.single("image"),
+  uploadImage("public/images").single("image"),
   async (req, res, next) => {
     const { id } = req.params;
     const data = req.body;

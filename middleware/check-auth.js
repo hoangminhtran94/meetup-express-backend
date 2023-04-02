@@ -21,7 +21,6 @@ exports.checkAuth = async (req, res, next) => {
     if (!user) {
       return next(serverError("Authentication failed", 403));
     }
-    console.log(user);
     req.currentUser = user;
   } else {
     return next(serverError("Authentication failed", 403));

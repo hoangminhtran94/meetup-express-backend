@@ -17,7 +17,9 @@ exports.createAUser = async (data) => {
 
 exports.getAUser = async (email) => {
   try {
-    return await db.user.findFirst({ where: { email: email } });
+    return await db.user.findFirst({
+      where: { email: email },
+    });
   } catch (error) {
     throw error;
   }

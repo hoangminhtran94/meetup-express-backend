@@ -1,6 +1,7 @@
 const express = require("express");
 const bcrypt = require("bcrypt");
 const route = express.Router();
+const { uploadImage } = require("../middleware/upload-image");
 const jwt = require("jsonwebtoken");
 const { createAUser } = require("../database/user-query");
 const { checkUserExistence } = require("../middleware/check-user-existence");
@@ -20,29 +21,33 @@ route.post("/login", checkUserExistence, async (req, res, next) => {
   res.json({ ...returnData, token }).status(201);
 });
 
-route.post("/register", async (req, res, next) => {
-  const { firstName, lastName, email, password: rawPassword } = req.body;
+route.post(
+  "/register",
+  uploadImage("public/profile-images").single("image"),
+  async (req, res, next) => {
+    const { firstName, lastName, email, password: rawPassword } = req.body;
+    let hashedPassword;
+    try {
+      hashedPassword = bcrypt.hashSync(rawPassword, 10);
+    } catch (error) {
+      next(error);
+    }
 
-  let hashedPassword;
-  try {
-    hashedPassword = await bcrypt.hash(rawPassword, 8);
-  } catch (error) {
-    next(error);
+    let user;
+    try {
+      user = await createAUser({
+        firstName,
+        lastName,
+        email,
+        password: hashedPassword,
+      });
+    } catch (error) {
+      next(error);
+    }
+    const { password, ...returnData } = user;
+    const token = jwt.sign({ userId: user.id }, "thisismysecret");
+    res.json({ ...returnData, token }).status(201);
   }
-  let user;
-  try {
-    user = await createAUser({
-      firstName,
-      lastName,
-      email,
-      password: hashedPassword,
-    });
-  } catch (error) {
-    next(error);
-  }
-  const { password, ...returnData } = user;
-  const token = jwt.sign({ userId: user.id }, "thisismysecret");
-  res.json({ ...returnData, token }).status(201);
-});
+);
 
 module.exports = route;

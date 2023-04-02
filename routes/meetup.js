@@ -9,9 +9,8 @@ const {
   getMeetups,
   addMeetup,
   updateMeetup,
-  getAMeetUp,
   deleteMeetup,
-} = require("../database/utils");
+} = require("../database/meetup-query");
 const { uploadImage } = require("../middleware/upload-image");
 
 router.get("/", async (req, res, next) => {

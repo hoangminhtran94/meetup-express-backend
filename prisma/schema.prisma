@@ -19,4 +19,15 @@ model Meetup {
   address      String
   contactEmail String
   isFavorite   Boolean
+  createrId    String  @db.ObjectId
+  User         User    @relation(fields: [createrId], references: [id])
+}
+
+model User {
+  id        String   @id @default(auto()) @map("_id") @db.ObjectId
+  firstName String
+  lastName  String
+  email     String   @unique
+  password  String
+  Meetup    Meetup[]
 }

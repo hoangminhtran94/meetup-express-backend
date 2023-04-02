@@ -1,4 +1,4 @@
-const { getAMeetUp } = require("../database/utils");
+const { getAMeetUp } = require("../database/meetup-query");
 exports.checkMeetupExistence = async (req, res, next) => {
   const { id } = req.params;
   let currentMeetup;

@@ -6,6 +6,9 @@ exports.createAUser = async (data) => {
       data: {
         firstName: data.firstName,
         lastName: data.lastName,
+        profileImage: data.profileImage,
+        phone: data.phone,
+        address: data.address,
         email: data.email,
         password: data.password,
       },

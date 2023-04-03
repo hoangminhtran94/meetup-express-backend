@@ -25,7 +25,14 @@ route.post(
   "/register",
   uploadImage("public/profile-images").single("image"),
   async (req, res, next) => {
-    const { firstName, lastName, email, password: rawPassword } = req.body;
+    const {
+      firstName,
+      lastName,
+      email,
+      password: rawPassword,
+      phone,
+      address,
+    } = req.body;
     let hashedPassword;
     try {
       hashedPassword = bcrypt.hashSync(rawPassword, 10);
@@ -37,8 +44,11 @@ route.post(
     try {
       user = await createAUser({
         firstName,
+        phone,
+        address,
         lastName,
         email,
+        profileImage: req.file ? req.file.path : "",
         password: hashedPassword,
       });
     } catch (error) {

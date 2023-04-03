@@ -29,8 +29,8 @@ app.use(express.urlencoded({ extended: false }));
 
 app.use("/public/images", express.static(path.join("public", "images")));
 app.use(
-  "/public/profileImages",
-  express.static(path.join("public", "profileImages"))
+  "/public/profile-images",
+  express.static(path.join("public", "profile-images"))
 );
 app.use("/api/auth", authRouter);
 app.use("/api/meetups", meetupRouter);
